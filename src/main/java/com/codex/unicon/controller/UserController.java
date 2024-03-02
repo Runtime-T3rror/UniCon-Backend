@@ -35,21 +35,13 @@ public class UserController {
         @RequestParam String password,
         @RequestParam String token
     ){
-        VerificationToken verificationToken = tokenRepo.findByToken(token);
-        if (verificationToken == null) {
-            return ResponseEntity.badRequest().body("Invalid token.");
+        CommonResponse<?> commonResponse = userService.setPassword(token, password);
+        if (commonResponse.getHasException()) {
+            return ResponseEntity.internalServerError().body(commonResponse.getErrorResponse());
         }
-        String email = verificationToken.getUserEmail();
-        if (email == null) {
-            return ResponseEntity.badRequest().body("User not found.");
+        if (!commonResponse.getIsSuccess()) {
+            return ResponseEntity.badRequest().body(commonResponse.getErrorResponse());
         }
-        userRepo.save(
-            User_.builder()
-                .email(email)
-                .password(password)
-                .build()
-        );
-        tokenRepo.delete(verificationToken);
-        return ResponseEntity.ok("Password set successfully. You can now login.");
+        return ResponseEntity.ok().body(commonResponse.getResult());
     }
 }
