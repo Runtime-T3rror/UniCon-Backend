@@ -16,6 +16,8 @@ public class Batch {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String batchName;
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "id")
     private Department deptId;
     //add unique construct
     //  UNIQUE(batch_name, dep_id)

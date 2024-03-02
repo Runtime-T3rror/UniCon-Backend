@@ -10,8 +10,6 @@ import com.codex.unicon.repository.UserRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -25,9 +23,10 @@ public class UserService {
     private final TokenRepo tokenRepo;
     @Value("${unicon.ipaddress}")
     private String IP_ADDRESS;
+
     @Transactional
     public CommonResponse<?> register(EmailReqDto emailReqDto) {
-        if(emailReqDto.getEmail() == null || emailReqDto.getEmail().isBlank()) {
+        if (emailReqDto.getEmail() == null || emailReqDto.getEmail().isBlank()) {
             return new CommonResponse<>(
                 new CommonErrorResponse(
                     new Date(),
@@ -37,7 +36,7 @@ public class UserService {
                 )
             );
         }
-        if(userRepo.findByEmail(emailReqDto.getEmail()).isPresent()) {
+        if (userRepo.findByEmail(emailReqDto.getEmail()).isPresent()) {
             return new CommonResponse<>(
                 new CommonErrorResponse(
                     new Date(),
@@ -47,6 +46,7 @@ public class UserService {
                 )
             );
         }
+        Long enrollmentNo = Long.parseLong(emailReqDto.getEmail().split("@")[0]);
         String token = UUID.randomUUID().toString();
         tokenRepo.save(
             VerificationToken.builder()
@@ -54,7 +54,7 @@ public class UserService {
                 .userEmail(emailReqDto.getEmail())
                 .build()
         );
-        String setPasswordUrl = "http://"+IP_ADDRESS+":8080/set-password?token=" + token;
+        String setPasswordUrl = "http://" + IP_ADDRESS + ":8080/set-password?token=" + token;
         sendEmail(emailReqDto.getEmail(), setPasswordUrl);
         return new CommonResponse<>(
             "Email is sent please verify"
@@ -62,8 +62,9 @@ public class UserService {
     }
 
     private void sendEmail(String to, String setPasswordUrl) {
-        emailService.sendEmail(to,"Set Your Password","Please click on the link below to set your password:\n\n" + setPasswordUrl);
+        emailService.sendEmail(to, "Set Your Password", "Please click on the link below to set your password:\n\n" + setPasswordUrl);
     }
+
     @Transactional
     public CommonResponse<?> setPassword(String token, String password) {
         VerificationToken verificationToken = tokenRepo.findByToken(token);

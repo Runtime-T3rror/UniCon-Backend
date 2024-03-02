@@ -15,16 +15,18 @@ public class TimeTable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "id")
     private TimeSlot timeId;
     @Enumerated(EnumType.STRING)
     private DayOfWeek day;
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "id")
     private Batch batId;
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "id")
     private Faculty facId;
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "id")
     private Room roomId;
-    //add unique construct
-    //UNIQUE(time_id, day, bat_id, fac_id, room_id),
-    //    UNIQUE (time_id, day, room_id),
-    //    UNIQUE (time_id, day, bat_id),
-    //    UNIQUE (time_id, day, fac_id)
-
 }

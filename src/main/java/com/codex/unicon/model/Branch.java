@@ -17,6 +17,7 @@ public class Branch {
     private Integer id;
     @Column(unique = true)
     private String branchName;
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "id")
     private Degree degreeId;
-
 }

@@ -20,5 +20,7 @@ public class BasicStudentDetails {
     @Column(unique = true)
     private BigInteger enrollmentNo;
     private String studentName;
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "id")
     private Branch branchId;
 }

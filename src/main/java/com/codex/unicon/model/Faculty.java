@@ -18,5 +18,7 @@ public class Faculty {
     private String name;
     @Column(unique = true)
     private String shortname;
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "id")
     private Subject subject;
 }

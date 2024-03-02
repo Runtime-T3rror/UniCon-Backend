@@ -15,8 +15,11 @@ public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column(unique = true)
     private String departmentName;
-    @Column(unique = true)
+
+    @ManyToOne
+    @JoinColumn(name = "hod_id", referencedColumnName = "id") // Adjust the column names as per your database schema
     private Faculty hod;
 }
