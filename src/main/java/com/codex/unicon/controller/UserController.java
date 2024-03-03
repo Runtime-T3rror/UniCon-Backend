@@ -2,10 +2,11 @@ package com.codex.unicon.controller;
 
 import com.codex.unicon.dto.common.CommonResponse;
 import com.codex.unicon.dto.request.EmailReqDto;
-import com.codex.unicon.repository.TokenRepo;
-import com.codex.unicon.repository.UserRepo;
+import com.codex.unicon.dto.request.LoginRequestDto;
+import com.codex.unicon.dto.response.TokenResponseDto;
 import com.codex.unicon.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final UserRepo userRepo;
-    private final TokenRepo tokenRepo;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody EmailReqDto emailReqDto) {
@@ -40,6 +39,20 @@ public class UserController {
         }
         if (!commonResponse.getIsSuccess()) {
             return ResponseEntity.badRequest().body(commonResponse.getErrorResponse());
+        }
+        return ResponseEntity.ok().body(commonResponse.getResult());
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
+        @RequestBody LoginRequestDto request
+    ) {
+        CommonResponse<TokenResponseDto> commonResponse = userService.login(request);
+        if (commonResponse.getHasException()) {
+            return ResponseEntity.internalServerError().body(commonResponse.getErrorResponse());
+        }
+        if (!commonResponse.getIsSuccess()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(commonResponse.getErrorResponse());
         }
         return ResponseEntity.ok().body(commonResponse.getResult());
     }
